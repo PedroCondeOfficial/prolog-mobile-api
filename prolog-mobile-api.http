@@ -1,0 +1,6 @@
+@prolog_mobile_api_HostAddress = http://localhost:5286
+
+GET {{prolog_mobile_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
