@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("prolog-mobile-api.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb285d44cfceaf4a47ee513f61f2074f1689e53c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfc8cd19df2b2a8f62933ad434ade5bd28ea3fcd")]
 [assembly: System.Reflection.AssemblyProductAttribute("prolog-mobile-api.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("prolog-mobile-api.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
