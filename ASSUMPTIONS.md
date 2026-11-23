@@ -28,3 +28,24 @@ Decisions made where the requirements didn't specify behaviour. Each is isolated
 5. **Results are deterministic.**
    Categories are ordered by name, items within a category by `id`, and ties on `lastUpdated` for
    `mostRecentlyUpdated` are broken by the lowest `id`.
+
+## Limitations
+
+The following were left out, mainly because this is going to be run locally and it's for this
+single use case, but in a production one we would include them.
+
+- **Caching.** Every request to `GET /api/prolog` fetches all records from the Prolog API again.
+  Because the Prolog API allows 5 requests per 10 seconds, each response takes about 10 seconds
+  and uses up the rate limit. In production, the summaries would be cached for a short time.
+
+- **Rate limiting on our own endpoint.** Nothing limits how often clients can call this API, so
+  several clients calling at once would compete for the Prolog API's rate limit and get slower or
+  fail with `503 RateLimited`.
+
+- **Authentication.** The endpoints are open to anyone who can reach the API.
+
+- **Paging our own response.** `GET /api/prolog` always returns every category with all of its
+  items in a single response.
+
+- **Health check depth.** `GET /api/prolog/health` only reports that this API is running; it
+  doesn't check whether the Prolog API is reachable.
