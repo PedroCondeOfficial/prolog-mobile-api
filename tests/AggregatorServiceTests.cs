@@ -38,37 +38,37 @@ public class AggregatorServiceTests
     }
 
     [Fact]
-    public void Zero_quantity_items_are_listed_but_not_counted_as_available()
+    public void Zero_and_negative_quantity_items_are_excluded_from_every_figure()
     {
         var result = _sut.Summarize(
         [
             Item(1, "tools", price: 10m, qty: 2),
-            Item(2, "tools", price: 999m, qty: 0),
+            Item(2, "tools", price: 999m, qty: 0, updated: T0.AddDays(5)), // newest, but unavailable
+            Item(3, "tools", price: 999m, qty: -1, updated: T0.AddDays(6)),
         ]);
 
         var tools = Assert.Single(result);
-        Assert.Equal(2, tools.Items.Count);
+        Assert.Equal([1], tools.Items.Select(i => i.Id));
         Assert.Equal(1, tools.AvailableRecordCount);
         Assert.Equal(20m, tools.TotalInventoryValue);
+        Assert.Equal(1, tools.MostRecentlyUpdated.Id);
     }
 
     [Fact]
-    public void Category_with_only_zero_quantity_items_still_appears()
+    public void Category_with_only_zero_quantity_items_does_not_appear()
     {
-        var result = _sut.Summarize([Item(1, "Discontinued", qty: 0)]);
+        var result = _sut.Summarize([Item(1, "Toys", qty: 1), Item(2, "Discontinued", qty: 0)]);
 
-        var discontinued = Assert.Single(result);
-        Assert.Equal(0, discontinued.AvailableRecordCount);
-        Assert.Equal(0m, discontinued.TotalInventoryValue);
+        Assert.Equal(["Toys"], result.Select(c => c.Category));
     }
 
     [Fact]
-    public void Most_recently_updated_picks_latest_including_zero_quantity_items()
+    public void Most_recently_updated_picks_the_latest_item()
     {
         var result = _sut.Summarize(
         [
-            Item(1, "a", qty: 5, updated: T0),
-            Item(2, "a", qty: 0, updated: T0.AddDays(3)),
+            Item(1, "a", updated: T0),
+            Item(2, "a", updated: T0.AddDays(3)),
         ]);
 
         var mostRecent = result.Single().MostRecentlyUpdated;

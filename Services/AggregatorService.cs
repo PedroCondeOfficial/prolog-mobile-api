@@ -9,6 +9,9 @@ public class AggregatorService
 {
     public CategorySummary[] Summarize(IEnumerable<PrologProductDto> products) =>
         products
+            // Only records with stock on hand count; zero (and nonsensical negative) quantities are excluded
+            // from everything: items, totals and mostRecentlyUpdated.
+            .Where(p => p.Quantity > 0)
             // Upstream categories vary in casing and whitespace ("  home & kitchen ", "HOME & KITCHEN"),
             // so normalise before grouping. Items carry the cleaned name too.
             .Select(p => p with { Category = NormalizeCategory(p.Category) })
@@ -26,7 +29,7 @@ public class AggregatorService
                 return new CategorySummary(
                     Category: g.Key,
                     TotalInventoryValue: items.Sum(p => p.Price * p.Quantity),
-                    AvailableRecordCount: items.Count(p => p.Quantity > 0),
+                    AvailableRecordCount: items.Count,
                     MostRecentlyUpdated: new MostRecentlyUpdatedItem(mostRecent.Id, mostRecent.Name, mostRecent.LastUpdated),
                     Items: items);
             })

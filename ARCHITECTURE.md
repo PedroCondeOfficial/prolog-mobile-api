@@ -25,7 +25,7 @@ Each layer has one job and knows only about the layer directly below it:
 |---|---|---|
 | Controller | `Controllers/PrologController.cs` | Exposes the HTTP endpoints. No logic. |
 | Service | `Services/PrologService.cs` | Orchestration: get all products from the client, hand them to the aggregator. Knows nothing about paging, HTTP or errors. |
-| Aggregator | `Services/AggregatorService.cs` | Pure business logic (LINQ): normalise categories, compute totals, pick the most recently updated item. No I/O. |
+| Aggregator | `Services/AggregatorService.cs` | Pure business logic (LINQ): drop zero-quantity records, normalise categories, compute totals, pick the most recently updated item. No I/O. |
 | Client | `Clients/PrologApiClient.cs` | Everything about talking to the Prolog API: paging, concurrency, mapping failures to `PrologApiException`. |
 | Resilience pipeline | `Clients/ClientRegistration.cs` | Retries, timeouts and circuit breaker, added to the `HttpClient`. Also sets the base URL and API key header. |
 | Middleware | `Middleware/PrologApiExceptionHandler.cs` | Turns a `PrologApiException` into a ProblemDetails response. |

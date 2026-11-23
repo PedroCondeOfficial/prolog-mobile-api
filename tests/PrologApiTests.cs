@@ -53,8 +53,9 @@ public class PrologApiTests(WebApplicationFactory<Program> factory) : IClassFixt
         var client = CreateClient(this, _ => Task.FromResult<IReadOnlyList<PrologProductDto>>(
         [
             new(1, "Hammer", " TOOLS ", 10m, 2, T0),
-            new(2, "Saw", "tools", 5m, 0, T0.AddDays(1)),
-            new(3, "Kite", "Toys", 4m, 1, T0),
+            new(2, "Saw", "tools", 5m, 1, T0.AddDays(1)),
+            new(3, "Drill", "tools", 50m, 0, T0.AddDays(2)), // out of stock: excluded
+            new(4, "Kite", "Toys", 4m, 1, T0),
         ]));
 
         var response = await client.GetAsync("/api/prolog", Ct);
@@ -65,8 +66,8 @@ public class PrologApiTests(WebApplicationFactory<Program> factory) : IClassFixt
 
         var tools = categories[0];
         Assert.Equal("Tools", tools.GetProperty("category").GetString());
-        Assert.Equal(20m, tools.GetProperty("totalInventoryValue").GetDecimal());
-        Assert.Equal(1, tools.GetProperty("availableRecordCount").GetInt32());
+        Assert.Equal(25m, tools.GetProperty("totalInventoryValue").GetDecimal());
+        Assert.Equal(2, tools.GetProperty("availableRecordCount").GetInt32());
 
         var mostRecent = tools.GetProperty("mostRecentlyUpdated");
         Assert.Equal(2, mostRecent.GetProperty("id").GetInt32());

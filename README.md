@@ -55,7 +55,7 @@ curl http://localhost:5286/api/prolog
 
 ### Response
 
-An array of categories, ordered by name:
+An array of categories, ordered by name. Only records with stock on hand (`quantity > 0`) are included:
 
 ```json
 [
@@ -63,9 +63,10 @@ An array of categories, ordered by name:
     "category": "Electronics",
     "totalInventoryValue": 18253.18,
     "availableRecordCount": 25,
-    "mostRecentlyUpdated": { "id": 1037, "name": "...", "lastUpdated": "..." },
+    "mostRecentlyUpdated": { "id": 1037, "name": "Barcode Scanner MK-1037", "lastUpdated": "2026-09-23T17:05:00+00:00" },
     "items": [
-      { "id": 1001, "name": "...", "category": "Electronics", "price": 4.99, "quantity": 0, "lastUpdated": "..." }
+      { "id": 1037, "name": "Barcode Scanner MK-1037", "category": "Electronics", "price": 21.99, "quantity": 23, "lastUpdated": "2026-09-23T17:05:00+00:00" },
+      "..."
     ]
   }
 ]
