@@ -18,9 +18,25 @@ builder.Services.AddHttpClient<IPrologApiClient, PrologApiClient>((sp, http) =>
     // Trailing slash so relative paths append to the base URL instead of replacing its last segment.
     http.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
     http.DefaultRequestHeaders.Add(PrologApiClient.ApiKeyHeaderName, options.ApiKey);
+})
+// Standard pipeline: total timeout -> retry (exponential backoff + jitter, honours Retry-After)
+// -> circuit breaker -> per-attempt timeout. Retries 429, 408, 5xx and transport errors; not other 4xx.
+// Tunable via "PrologApi:Resilience" in appsettings.json.
+.AddStandardResilienceHandler(builder.Configuration.GetSection($"{PrologApiOptions.SectionName}:Resilience"));
+
+const string UiCorsPolicy = "Ui";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(UiCorsPolicy, policy =>
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<AggregatorService>();
 builder.Services.AddScoped<PrologService>();
 builder.Services.AddOpenApi();
 
@@ -33,6 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(UiCorsPolicy);
 
 app.MapControllers();
 

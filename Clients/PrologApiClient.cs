@@ -4,13 +4,8 @@ namespace prolog_mobile_api.Clients;
 
 public interface IPrologApiClient
 {
-    /// <summary>Fetches a single page of products.</summary>
-    Task<PrologRecordsPageDto> GetProductsPageAsync(
-        int page, int pageSize, CancellationToken cancellationToken = default);
-
-    /// <summary>Fetches several pages concurrently and returns them in the order requested.</summary>
-    Task<IReadOnlyList<PrologRecordsPageDto>> GetProductsPagesAsync(
-        IEnumerable<int> pages, int pageSize, int maxConcurrency = 4, CancellationToken cancellationToken = default);
+    /// <summary>Fetches every product record, walking all pages of the Prolog API.</summary>
+    Task<IReadOnlyList<PrologProductDto>> GetAllProductsAsync(CancellationToken cancellationToken = default);
 }
 
 public class PrologApiClient(HttpClient httpClient) : IPrologApiClient
@@ -18,42 +13,38 @@ public class PrologApiClient(HttpClient httpClient) : IPrologApiClient
     public const string ApiKeyHeaderName = "X-Api-Key";
     private const string RecordsPath = "records";
 
-    public const int MaxPageSize = 25;
+    // API allows pageSize 1-25; the largest page means the fewest requests.
+    private const int PageSize = 25;
 
-    public async Task<PrologRecordsPageDto> GetProductsPageAsync(
-        int page, int pageSize, CancellationToken cancellationToken = default)
+    // Upper bound on in-flight requests, so we don't hammer the API into rate-limiting us.
+    private const int MaxConcurrentRequests = 4;
+
+    public async Task<IReadOnlyList<PrologProductDto>> GetAllProductsAsync(CancellationToken cancellationToken = default)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(page, 1);
-        ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(pageSize, MaxPageSize);
+        // The first page tells us how many pages there are; the rest are fetched concurrently.
+        var firstPage = await GetPageAsync(1, cancellationToken);
 
-        // TODO: error handling (non-success status codes, timeouts, retries).
-        var result = await httpClient.GetFromJsonAsync<PrologRecordsPageDto>(
-            $"{RecordsPath}?page={page}&pageSize={pageSize}", cancellationToken);
+        var totalPages = Math.Max(1, firstPage.TotalPages);
+        var pages = new PrologRecordsPageDto[totalPages];
+        pages[0] = firstPage;
 
-        return result ?? throw new InvalidOperationException("Prolog API returned an empty response body.");
+        await Parallel.ForEachAsync(
+            Enumerable.Range(2, totalPages - 1),
+            new ParallelOptions { MaxDegreeOfParallelism = MaxConcurrentRequests, CancellationToken = cancellationToken },
+            async (page, token) => pages[page - 1] = await GetPageAsync(page, token));
+
+        return pages
+            .SelectMany(p => p.Records)
+            .DistinctBy(r => r.Id) // records can shift between pages while we're paging
+            .ToList();
     }
 
-    public async Task<IReadOnlyList<PrologRecordsPageDto>> GetProductsPagesAsync(
-        IEnumerable<int> pages, int pageSize, int maxConcurrency = 4, CancellationToken cancellationToken = default)
+    private async Task<PrologRecordsPageDto> GetPageAsync(int page, CancellationToken cancellationToken)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(maxConcurrency, 1);
+        // TODO: error handling (non-success status codes, timeouts, retries).
+        var result = await httpClient.GetFromJsonAsync<PrologRecordsPageDto>(
+            $"{RecordsPath}?page={page}&pageSize={PageSize}", cancellationToken);
 
-        using var throttle = new SemaphoreSlim(maxConcurrency);
-
-        var tasks = pages.Select(async page =>
-        {
-            await throttle.WaitAsync(cancellationToken);
-            try
-            {
-                return await GetProductsPageAsync(page, pageSize, cancellationToken);
-            }
-            finally
-            {
-                throttle.Release();
-            }
-        }).ToList();
-
-        return await Task.WhenAll(tasks);
+        return result ?? throw new InvalidOperationException("Prolog API returned an empty response body.");
     }
 }

@@ -1,14 +1,13 @@
 using prolog_mobile_api.Clients;
-using prolog_mobile_api.DTOs;
+using prolog_mobile_api.Models;
 
 namespace prolog_mobile_api.Services;
 
-public class PrologService(IPrologApiClient prologApiClient)
+public class PrologService(IPrologApiClient prologApiClient, AggregatorService aggregator)
 {
-    // Single page for now; switch to prologApiClient.GetProductsPagesAsync once this is verified.
-    public Task<PrologRecordsPageDto> GetProductsAsync(
-        int page, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<CategorySummary[]> GetCategorySummariesAsync(CancellationToken cancellationToken = default)
     {
-        return prologApiClient.GetProductsPageAsync(page, pageSize, cancellationToken);
+        var products = await prologApiClient.GetAllProductsAsync(cancellationToken);
+        return aggregator.Summarize(products);
     }
 }
