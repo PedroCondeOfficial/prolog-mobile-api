@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("63d2b584-e2e6-42ba-b61c-3e8a7295522a")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7df21e84a671adc7fb38e16a922d23293a338406")]
 [assembly: System.Reflection.AssemblyProductAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

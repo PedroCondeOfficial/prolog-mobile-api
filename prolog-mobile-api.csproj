@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>prolog_mobile_api</RootNamespace>
+    <UserSecretsId>63d2b584-e2e6-42ba-b61c-3e8a7295522a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

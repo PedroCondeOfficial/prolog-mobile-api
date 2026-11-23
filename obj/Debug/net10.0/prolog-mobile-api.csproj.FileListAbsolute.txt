@@ -31,3 +31,4 @@
 /home/pedro/Documents/prolog-mobile-api/obj/Debug/net10.0/prolog-mobile-api.pdb
 /home/pedro/Documents/prolog-mobile-api/obj/Debug/net10.0/prolog-mobile-api.genruntimeconfig.cache
 /home/pedro/Documents/prolog-mobile-api/obj/Debug/net10.0/ref/prolog-mobile-api.dll
+/home/pedro/Documents/prolog-mobile-api/obj/Debug/net10.0/prolog-mobile-api.sourcelink.json
