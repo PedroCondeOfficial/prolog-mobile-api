@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using prolog_mobile_api.Clients;
 using prolog_mobile_api.Config;
+using prolog_mobile_api.Middleware;
 using prolog_mobile_api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,11 +37,15 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<PrologApiExceptionHandler>();
 builder.Services.AddSingleton<AggregatorService>();
 builder.Services.AddScoped<PrologService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
