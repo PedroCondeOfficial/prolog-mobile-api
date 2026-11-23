@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25b4b23bea790873d5407ba1e7c96f591c797eba")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fb285d44cfceaf4a47ee513f61f2074f1689e53c")]
 [assembly: System.Reflection.AssemblyProductAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("prolog-mobile-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,6 +1,4 @@
-using Microsoft.Extensions.Options;
 using prolog_mobile_api.Clients;
-using prolog_mobile_api.Config;
 using prolog_mobile_api.Middleware;
 using prolog_mobile_api.Services;
 
@@ -8,22 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOptions<PrologApiOptions>()
-    .Bind(builder.Configuration.GetSection(PrologApiOptions.SectionName))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.AddHttpClient<IPrologApiClient, PrologApiClient>((sp, http) =>
-{
-    var options = sp.GetRequiredService<IOptions<PrologApiOptions>>().Value;
-    // Trailing slash so relative paths append to the base URL instead of replacing its last segment.
-    http.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
-    http.DefaultRequestHeaders.Add(PrologApiClient.ApiKeyHeaderName, options.ApiKey);
-})
-// Standard pipeline: total timeout -> retry (exponential backoff + jitter, honours Retry-After)
-// -> circuit breaker -> per-attempt timeout. Retries 429, 408, 5xx and transport errors; not other 4xx.
-// Tunable via "PrologApi:Resilience" in appsettings.json.
-.AddStandardResilienceHandler(builder.Configuration.GetSection($"{PrologApiOptions.SectionName}:Resilience"));
+builder.Services.AddPrologApiClient(builder.Configuration);
 
 const string UiCorsPolicy = "Ui";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];

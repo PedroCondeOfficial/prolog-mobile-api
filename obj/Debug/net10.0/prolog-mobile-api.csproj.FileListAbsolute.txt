@@ -44,3 +44,4 @@
 /home/pedro/Documents/prolog-mobile-api/bin/Debug/net10.0/Polly.Core.dll
 /home/pedro/Documents/prolog-mobile-api/bin/Debug/net10.0/Polly.Extensions.dll
 /home/pedro/Documents/prolog-mobile-api/bin/Debug/net10.0/Polly.RateLimiting.dll
+/home/pedro/Documents/prolog-mobile-api/bin/Debug/net10.0/global.json
